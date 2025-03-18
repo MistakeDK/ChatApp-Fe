@@ -9,10 +9,10 @@ export const Route = createRootRoute({
 function RootComponent() {
   return (
     <React.Fragment>
-
-      <div className="text-3xl">Hello "__root"!</div>
-      <Outlet />
-      <TanStackRouterDevtools />
+      <div className="w-screen h-screen overflow-hidden">
+        <Outlet />
+        <TanStackRouterDevtools />
+      </div>
     </React.Fragment>
   );
 }
