@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Outlet, createRootRoute } from "@tanstack/react-router";
 
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 export const Route = createRootRoute({
   component: RootComponent,
 });
@@ -9,9 +8,8 @@ export const Route = createRootRoute({
 function RootComponent() {
   return (
     <React.Fragment>
-      <div className="w-screen h-screen overflow-hidden">
+      <div className="w-screen h-screen">
         <Outlet />
-        <TanStackRouterDevtools />
       </div>
     </React.Fragment>
   );

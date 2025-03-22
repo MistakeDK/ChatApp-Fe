@@ -1,12 +1,16 @@
-import { Button } from "@heroui/react";
+import { ProtectedRoute } from "@/context/authContext";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
-  component: RouteComponent,
+  component: () => {
+    return (
+      <ProtectedRoute>
+        <RouteComponent></RouteComponent>
+      </ProtectedRoute>
+    );
+  },
 });
 
 function RouteComponent() {
-  return <div>
-    <Button></Button>
-  </div>;
+  return <div></div>;
 }

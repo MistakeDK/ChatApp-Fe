@@ -1,5 +1,8 @@
 import { IMAGES } from "@/config/constant";
-import { axiosClient } from "@/services";
+import { loginApi } from "@/services/auth/auth";
+import { IBodyLogin } from "@/services/auth/auth.interface";
+import { useAuthStore } from "@/store/auth.store";
+import { log } from "@/util/logger";
 import { Button, Form, Image, Input } from "@heroui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation } from "@tanstack/react-query";
@@ -7,12 +10,8 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 
-interface IBodyLogin {
-  gmail: string;
-  password: string;
-}
-
 export const Login = () => {
+  const { login } = useAuthStore();
   const loginBodySchema: yup.ObjectSchema<IBodyLogin> = yup.object({
     gmail: yup
       .string()
@@ -22,11 +21,18 @@ export const Login = () => {
   });
   const mutationLogin = useMutation({
     mutationFn: (body: IBodyLogin) => {
-      return axiosClient.post("/auth", body);
+      return loginApi({
+        body,
+        notifyConfig: {
+          success: "Login success",
+          error: "Login error",
+        },
+      });
     },
     onSuccess: (response) => {
-      console.log("Login successful!", response.data);
-      // Lưu token vào localStorage hoặc context nếu cần
+      const { message } = response;
+      log("response", response);
+      login(message.accessToken, message.refreshToken, message.id);
     },
     onError: (error) => {
       console.error("Login failed:", error);
@@ -42,7 +48,6 @@ export const Login = () => {
   });
 
   const onSubmit = (values: IBodyLogin) => {
-    console.log(values);
     mutationLogin.mutate(values);
   };
 
@@ -80,7 +85,7 @@ export const Login = () => {
           </div>
           {/* Image Login */}
           <div className="w-1/2 h-full">
-            <div className="w-full h-full">
+            <div className="w-full h-full flex justify-center items-center">
               <Image src={IMAGES.LoginScreen}></Image>
             </div>
           </div>

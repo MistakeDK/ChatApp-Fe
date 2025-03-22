@@ -4,7 +4,8 @@ import { routeTree } from "./routeTree.gen";
 import "./index.css";
 import { HeroUIProvider } from "@heroui/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
+import { ToastProvider } from "@heroui/toast";
+import { ApiConfig } from "./services";
 const router = createRouter({ routeTree });
 const queryClient = new QueryClient();
 declare module "@tanstack/react-router" {
@@ -19,6 +20,8 @@ if (!rootElement.innerHTML) {
   root.render(
     <QueryClientProvider client={queryClient}>
       <HeroUIProvider>
+        <ApiConfig />
+        <ToastProvider placement="top-right" />
         <RouterProvider router={router} />
       </HeroUIProvider>
     </QueryClientProvider>
