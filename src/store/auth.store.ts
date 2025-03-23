@@ -34,7 +34,10 @@ export const useAuthStore = create<authAction & authState>()(
           refreshToken,
           idUser: idUser,
         }),
-      logout: () => set({}),
+      logout: () =>
+        set({
+          isAuthenticated: false,
+        }),
     }),
     {
       name: eLocalKey.AUTH_INFO as string,

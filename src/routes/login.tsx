@@ -1,8 +1,6 @@
 import { DefaultLayout } from "@/layout/DefaultLayout";
-import { Login } from "@/page/Login";
-import { getMeApi } from "@/services/auth/auth";
+import { Auth } from "@/page/auth";
 import { useAuthStore } from "@/store/auth.store";
-import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useEffect } from "react";
 
@@ -24,7 +22,7 @@ function RouteComponent() {
   return (
     <div className="w-full h-full">
       <DefaultLayout>
-        <Login></Login>
+        <Auth></Auth>
       </DefaultLayout>
     </div>
   );

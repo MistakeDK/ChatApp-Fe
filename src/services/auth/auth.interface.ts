@@ -3,6 +3,13 @@ export interface IBodyLogin {
   password: string;
 }
 
+export interface IBodyRegister {
+  name: string;
+  gmail: string;
+  password: string;
+  rePassword: string;
+}
+
 export interface IAuthInfo {
   accessToken: string;
   refreshToken: string;

@@ -6,3 +6,7 @@ export enum eEnvKey {
 export enum eLocalKey {
   AUTH_INFO = "Auth_Info",
 }
+export enum eFormType {
+  LOGIN,
+  REGISTER,
+}

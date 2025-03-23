@@ -7,7 +7,7 @@ import { axiosClient } from "./config";
 import { useAuthStore } from "@/store/auth.store";
 
 export const ApiConfig = () => {
-  const { accessToken } = useAuthStore();
+  const { accessToken, logout } = useAuthStore();
   const handleSuccessResponse = (response: AxiosResponse<any, any>) => {
     const notifyMessage: NotifyConfig = _.get(response.config, "notifyConfig", {
       success: false,
@@ -32,6 +32,9 @@ export const ApiConfig = () => {
     const notifyMessage: NotifyConfig = _.get(error.config, "notifyConfig", {
       error: false,
     });
+    if (error.status === 401) {
+      logout();
+    }
 
     if (notifyMessage?.error !== false) {
       addToast({
