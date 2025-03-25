@@ -4,5 +4,11 @@ export interface IConversationPreview {
     idUser: string;
     message: string;
   };
-  name:string
+  name: string;
+}
+
+export interface IMessageDetail {
+  _id: string;
+  sender: string;
+  content: string;
 }

@@ -24,7 +24,7 @@ function RouteComponent() {
             {/* Side chat */}
             <SideChat />
           </div>
-          <div className="flex w-4/5 h-full">
+          <div className="flex w-3/5 h-full">
             {/* Chat Box */}
             <ChatBox />
           </div>

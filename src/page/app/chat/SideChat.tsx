@@ -17,6 +17,7 @@ export const SideChat = () => {
         },
       }),
   });
+
   return (
     <React.Fragment>
       <div className="flex flex-col w-full h-full overflow-y-auto bg-slate-700 rounded-lg p-2 space-y-2">
