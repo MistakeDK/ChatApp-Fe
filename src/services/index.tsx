@@ -7,7 +7,7 @@ import { axiosClient } from "./config";
 import { useAuthStore } from "@/store/auth.store";
 
 export const ApiConfig = () => {
-  const { accessToken, logout } = useAuthStore();
+  const { accessToken, refreshToken, logout } = useAuthStore();
   const handleSuccessResponse = (response: AxiosResponse<any, any>) => {
     const notifyMessage: NotifyConfig = _.get(response.config, "notifyConfig", {
       success: false,
@@ -24,7 +24,6 @@ export const ApiConfig = () => {
         radius: "sm",
       });
     }
-
     return response.data;
   };
 
@@ -71,6 +70,6 @@ export const ApiConfig = () => {
       axiosClient.interceptors.response.eject(interceptorsResponse);
       axiosClient.interceptors.request.eject(interceptorsRequest);
     };
-  }, []);
+  }, [accessToken, refreshToken]);
   return null;
 };

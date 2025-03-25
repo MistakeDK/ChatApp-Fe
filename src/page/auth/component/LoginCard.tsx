@@ -1,6 +1,7 @@
 import { loginApi } from "@/services/auth/auth";
 import { IBodyLogin } from "@/services/auth/auth.interface";
 import { useAuthStore } from "@/store/auth.store";
+import { logError } from "@/util/logger";
 import { Button, Form, Input } from "@heroui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation } from "@tanstack/react-query";
@@ -32,10 +33,11 @@ export const LoginCard = ({ changeTypeForm }: IProps) => {
     },
     onSuccess: (response) => {
       const { message } = response;
+      console.log(message);
       login(message.accessToken, message.refreshToken, message.id);
     },
     onError: (error) => {
-      console.error("Login failed:", error);
+      logError(error);
     },
   });
   const {
