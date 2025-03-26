@@ -4,7 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useChatStore } from "@/store/chat.store";
 import { getMessageDetail } from "@/services/chat/chat";
 import { Message } from "./components/Message";
-import { Input } from "@heroui/react";
+import { Button, Input } from "@heroui/react";
+import { Icon } from "@iconify/react/dist/iconify.js";
 
 export const ChatBox = () => {
   const { chatTarget } = useChatStore();
@@ -32,9 +33,18 @@ export const ChatBox = () => {
               <Message messageDetail={message}></Message>
             ))}
           </div>
-          <div className="w-full py-1 items-end">
-            <Input />
-          </div>
+          <Input
+            radius="none"
+            endContent={
+              <Button size="sm" isIconOnly>
+                <Icon
+                  icon="material-symbols:send-rounded"
+                  width="24"
+                  height="24"
+                />
+              </Button>
+            }
+          />
         </div>
       </div>
     </React.Fragment>

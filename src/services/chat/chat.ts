@@ -1,9 +1,9 @@
 import { callApi } from "../callApi";
-import { IRequestParams, IResponse } from "../interface";
+import { IQuerryPage, IRequestParams, IResponse } from "../interface";
 import { IConversationPreview, IMessageDetail } from "./chat.interface";
 
 export const getListPreviewConversationApi = (
-  params: IRequestParams<{ id: string }, null, null>
+  params: IRequestParams<{ id: string }, IQuerryPage, null>
 ): Promise<IResponse<IConversationPreview[]>> =>
   callApi({
     url: "/chat/:id",

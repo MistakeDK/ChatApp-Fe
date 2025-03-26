@@ -68,3 +68,8 @@ export type IRequestParamWithAll<P, Q, B> = {
 };
 
 export type IRequestParamWithoutAny = null; // Không có tham số nào
+
+export interface IQuerryPage {
+  limit: number;
+  page: number;
+}

@@ -5,11 +5,13 @@ export const callApi = ({
   url,
   pathVariable,
   body,
+  queryParam,
   ...options
 }: {
   url: string;
   pathVariable?: unknown;
   body?: unknown;
+  queryParam?: unknown;
 }) => {
   let formattedUrl = url;
 
@@ -22,6 +24,7 @@ export const callApi = ({
   return axiosClient({
     url: formattedUrl,
     data: body,
+    params: queryParam,
     ...options,
   }) as Promise<AxiosResponse["data"]>;
 };

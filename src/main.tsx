@@ -23,6 +23,7 @@ if (!rootElement.innerHTML) {
       <HeroUIProvider>
         <ApiConfig />
         <ToastProvider placement="top-right" />
+
         <RouterProvider router={router} />
       </HeroUIProvider>
     </QueryClientProvider>

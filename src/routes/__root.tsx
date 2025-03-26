@@ -8,8 +8,8 @@ export const Route = createRootRoute({
 function RootComponent() {
   return (
     <React.Fragment>
-      <div className="w-screen h-screen">
-        <TanStackRouterDevtools />
+      <TanStackRouterDevtools position="bottom-right" />
+      <div className="w-screen h-screen dark text-foreground bg-background overflow-hidden">
         <Outlet />
       </div>
     </React.Fragment>
