@@ -2,6 +2,7 @@ import { ProtectedRoute } from "@/context/authContext";
 import { ChatLayout } from "@/layout/ChatLayout";
 import { ChatBox } from "@/page/app/chat/ChatBox";
 import { SideChat } from "@/page/app/chat/SideChat";
+import { UserChatInfo } from "@/page/app/chat/UserChatInfo";
 import { createFileRoute } from "@tanstack/react-router";
 import React from "react";
 
@@ -27,6 +28,10 @@ function RouteComponent() {
           <div className="flex w-3/5 h-full">
             {/* Chat Box */}
             <ChatBox />
+          </div>
+          <div className="flex w-1/5 h-full">
+            {/*  */}
+            <UserChatInfo />
           </div>
         </div>
       </ChatLayout>

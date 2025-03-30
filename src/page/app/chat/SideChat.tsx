@@ -2,7 +2,7 @@ import { getListPreviewConversationApi } from "@/services/chat/chat";
 import { useAuthStore } from "@/store/auth.store";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
-import { ChatCard } from "./components/ChatCard";
+import { ChatCard } from "./component/ChatCard";
 import { Input } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { useChatStore } from "@/store/chat.store";
@@ -41,6 +41,7 @@ export const SideChat = () => {
       <div className="flex flex-col w-full h-full overflow-y-auto bg-slate-700 rounded-lg p-2 space-y-2">
         <div className="w-full flex">
           <Input
+            placeholder="Search user"
             className="text-2xl"
             startContent={
               <React.Fragment>

@@ -1,9 +1,9 @@
 import React from "react";
-import { ChatBoxHeader } from "./components/ChatBoxHeader";
+import { ChatBoxHeader } from "./component/ChatBoxHeader";
 import { useQuery } from "@tanstack/react-query";
 import { useChatStore } from "@/store/chat.store";
 import { getMessageDetail } from "@/services/chat/chat";
-import { Message } from "./components/Message";
+import { Message } from "./component/Message";
 import { Button, Input } from "@heroui/react";
 import { Icon } from "@iconify/react/dist/iconify.js";
 
