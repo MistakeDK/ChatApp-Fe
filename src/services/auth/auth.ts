@@ -1,6 +1,11 @@
 import { callApi } from "../callApi";
 import { IRequestParams, IResponse } from "../interface";
-import { IAuthInfo, IBodyLogin, IBodyRegister } from "./auth.interface";
+import {
+  IAuthInfo,
+  IBodyLogin,
+  IBodyRegister,
+  IUserInfo,
+} from "./auth.interface";
 
 export const loginApi = (
   params: IRequestParams<null, null, IBodyLogin>
@@ -11,7 +16,9 @@ export const loginApi = (
     ...params,
   });
 
-export const getMeApi = (params: IRequestParams<{ id: string }, null, null>) =>
+export const getMeApi = (
+  params: IRequestParams<{ id: string }, null, null>
+): Promise<IResponse<IUserInfo>> =>
   callApi({
     url: "/auth/:id",
     method: "GET",
@@ -24,5 +31,12 @@ export const registerApi = (
   callApi({
     url: "/auth/register",
     method: "POST",
+    ...params,
+  });
+
+export const logoutApi = (params: IRequestParams<null, null, null>) =>
+  callApi({
+    url: "/auth",
+    method: "PATCH",
     ...params,
   });

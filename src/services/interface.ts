@@ -67,7 +67,11 @@ export type IRequestParamWithAll<P, Q, B> = {
   body: B;
 };
 
-export type IRequestParamWithoutAny = null; // Không có tham số nào
+export type IRequestParamWithoutAny = {
+  pathVariable?: undefined;
+  queryParam?: undefined;
+  body?: undefined;
+}; // Không có tham số nào
 
 export interface IQuerryPage {
   limit: number;

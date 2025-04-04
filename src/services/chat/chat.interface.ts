@@ -3,8 +3,8 @@ export interface IConversationPreview {
   lastMessage: {
     idUser: string;
     message: string;
+    username: string;
   };
-  name: string;
 }
 
 export interface IMessageDetail {

@@ -17,8 +17,10 @@ export const Auth = () => {
         className="flex w-2/5 h-3/5 p-2 rounded-lg  shadow-md "
       >
         <CardBody>
+          <div></div>
           <div className="flex w-full space-x-4 h-full">
-            <div className="w-1/2 flex h-full items-center justify-center">
+            <div className="w-1/2 flex flex-col h-full items-center justify-center">
+              <Image src={IMAGES.Logo} className="size-32" />
               {isLogin === eFormType.LOGIN && (
                 <LoginCard
                   changeTypeForm={() => setIsLogin(eFormType.REGISTER)}

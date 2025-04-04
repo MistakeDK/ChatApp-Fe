@@ -12,7 +12,7 @@ export const ChatCard = ({ chatPreview, isLoading }: IProps) => {
     <div
       className="w-full"
       onClick={() => {
-        selectTarget(chatPreview._id, chatPreview.name);
+        selectTarget(chatPreview._id, chatPreview.lastMessage.username);
       }}
     >
       <Card
@@ -27,7 +27,7 @@ export const ChatCard = ({ chatPreview, isLoading }: IProps) => {
                 <Avatar></Avatar>
               </div>
               <div className="w-full flex flex-col">
-                <span>{chatPreview.name}</span>
+                <span>{chatPreview.lastMessage.username}</span>
                 <span>{chatPreview.lastMessage.message}</span>
               </div>
             </div>

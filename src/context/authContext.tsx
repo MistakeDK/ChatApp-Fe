@@ -28,7 +28,7 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
       return;
     }
     if (isSuccess) {
-      setUserInfo(data.data);
+      setUserInfo(data.message);
     }
   }, [isAuthenticated, router]);
   if (!isAuthenticated || isLoading) {

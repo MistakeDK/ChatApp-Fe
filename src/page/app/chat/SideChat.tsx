@@ -31,8 +31,8 @@ export const SideChat = () => {
       return;
     }
     if (page === 1) {
-      const { _id, name } = data.message[0];
-      selectTarget(_id, name);
+      const { _id, lastMessage } = data.message[0];
+      selectTarget(_id, lastMessage.username);
     }
   }, [isSuccess]);
 

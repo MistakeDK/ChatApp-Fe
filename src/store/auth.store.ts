@@ -6,8 +6,8 @@ import { encryptedStorage } from "./middlewareStorage";
 
 type authState = {
   isAuthenticated: boolean | null;
-  accessToken: string;
-  refreshToken: string;
+  accessToken: string | null;
+  refreshToken: string | null;
   userInfo: IUserInfo | null;
   idUser: string | null;
 };
@@ -37,6 +37,10 @@ export const useAuthStore = create<authAction & authState>()(
       logout: () =>
         set({
           isAuthenticated: false,
+          idUser: null,
+          accessToken: null,
+          refreshToken: null,
+          userInfo: null,
         }),
     }),
     {
