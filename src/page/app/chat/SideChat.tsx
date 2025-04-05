@@ -1,17 +1,38 @@
 import { getListPreviewConversationApi } from "@/services/chat/chat";
 import { useAuthStore } from "@/store/auth.store";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import React, { useEffect, useState } from "react";
+import {
+  keepPreviousData,
+  useInfiniteQuery,
+  useQuery,
+} from "@tanstack/react-query";
+import React, { useEffect, useMemo, useState } from "react";
 import { ChatCard } from "./component/ChatCard";
-import { Input } from "@heroui/react";
+import { Input, Spinner } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { useChatStore } from "@/store/chat.store";
+import { findUserByName } from "@/services/user/user";
+import _ from "lodash";
+import { IUserSearchResponse } from "@/services/user/user.interface";
+import { IResponse } from "@/services/interface";
+import { UserCard } from "./component/UserCard";
+import { PAGE_SIZE } from "@/config/constant";
+
 export const SideChat = () => {
   const { idUser } = useAuthStore();
-  const [page] = useState<number>(1);
+  const [pageConversation] = useState<number>(1);
+  const [inputSearchUser, setInputSearchUser] = useState<string>();
   const { selectTarget } = useChatStore();
-  const { data, isFetching, isSuccess } = useQuery({
-    queryKey: [`${idUser}:${page}`],
+
+  const debouncedSetSearch = useMemo(
+    () =>
+      _.debounce((value: string) => {
+        setInputSearchUser(value);
+      }, 300),
+    []
+  );
+
+  const getConversationQuerry = useQuery({
+    queryKey: [`${idUser}:${pageConversation}`],
     enabled: !!idUser,
     queryFn: () =>
       getListPreviewConversationApi({
@@ -20,21 +41,44 @@ export const SideChat = () => {
         },
         queryParam: {
           limit: 10,
-          page,
+          page: pageConversation,
         },
       }),
     placeholderData: keepPreviousData,
   });
 
+  const fetchUser = async (pageParam: number) => {
+    const result = await findUserByName({
+      queryParam: {
+        page: pageParam,
+        limit: 10,
+        name: inputSearchUser as string,
+      },
+    });
+    return result;
+  };
+
+  const getUserById = useInfiniteQuery<IResponse<IUserSearchResponse>>({
+    queryKey: ["getUserById", inputSearchUser],
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      const totalLoaded = allPages.length * PAGE_SIZE;
+      const totalRecords = lastPage?.message.total;
+      return totalLoaded < totalRecords ? allPages.length + 1 : undefined;
+    },
+    queryFn: ({ pageParam }) => fetchUser(pageParam as number),
+    enabled: !_.isEmpty(inputSearchUser),
+  });
+
   useEffect(() => {
-    if (!data) {
+    if (!getConversationQuerry.data) {
       return;
     }
-    if (page === 1) {
-      const { _id, lastMessage } = data.message[0];
+    if (pageConversation === 1) {
+      const { _id, lastMessage } = getConversationQuerry.data.message[0];
       selectTarget(_id, lastMessage.username);
     }
-  }, [isSuccess]);
+  }, [getConversationQuerry.isSuccess]);
 
   return (
     <React.Fragment>
@@ -43,6 +87,7 @@ export const SideChat = () => {
           <Input
             placeholder="Search user"
             className="text-2xl"
+            onChange={(e) => debouncedSetSearch(e.target.value)}
             startContent={
               <React.Fragment>
                 <Icon icon="mdi:search" />
@@ -50,9 +95,27 @@ export const SideChat = () => {
             }
           />
         </div>
-        {data?.message.map((item) => (
-          <ChatCard isLoading={isFetching} chatPreview={item}></ChatCard>
-        ))}
+        {_.isEmpty(inputSearchUser) &&
+          getConversationQuerry.data?.message.map((item) => (
+            <ChatCard
+              key={item._id}
+              isLoading={getConversationQuerry.isFetching}
+              chatPreview={item}
+            ></ChatCard>
+          ))}
+        {!_.isEmpty(inputSearchUser) && (
+          <div className="flex flex-col w-full h-full space-y-1">
+            {getUserById.isSuccess &&
+              getUserById.data.pages.map((page) => {
+                return page.message.users.map((user) => (
+                  <UserCard userInfo={user} />
+                ));
+              })}
+            {(getUserById.isLoading || getUserById.isFetchingNextPage) && (
+              <Spinner />
+            )}
+          </div>
+        )}
       </div>
     </React.Fragment>
   );

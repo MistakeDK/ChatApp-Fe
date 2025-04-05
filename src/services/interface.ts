@@ -71,7 +71,7 @@ export type IRequestParamWithoutAny = {
   pathVariable?: undefined;
   queryParam?: undefined;
   body?: undefined;
-}; // Không có tham số nào
+};
 
 export interface IQuerryPage {
   limit: number;
