@@ -15,7 +15,7 @@ function RouteComponent() {
   useEffect(() => {
     if (isAuthenticated) {
       router.navigate({
-        to: "/home",
+        to: "/",
       });
     }
   }, [isAuthenticated]);

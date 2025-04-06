@@ -1,3 +1,4 @@
+import { SpinLoadingApp } from "@/components/SpinLoadingApp";
 import { getMeApi } from "@/services/auth/auth";
 import { useAuthStore } from "@/store/auth.store";
 import { useQuery } from "@tanstack/react-query";
@@ -9,7 +10,7 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
 
   const { isError, isLoading, isSuccess, data } = useQuery({
-    queryKey: ["userInfo"],
+    queryKey: ["userInfo", idUser],
     queryFn: () =>
       getMeApi({
         pathVariable: {
@@ -32,7 +33,7 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     }
   }, [isAuthenticated, router]);
   if (!isAuthenticated || isLoading) {
-    return <div>Loading...</div>;
+    return <SpinLoadingApp />;
   }
 
   return <>{children}</>;
