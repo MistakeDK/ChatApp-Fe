@@ -5,7 +5,7 @@ import {
   useInfiniteQuery,
   useQuery,
 } from "@tanstack/react-query";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ChatCard } from "./component/ChatCard";
 import { Input, Spinner } from "@heroui/react";
 import { Icon } from "@iconify/react";
@@ -16,11 +16,16 @@ import { IUserSearchResponse } from "@/services/user/user.interface";
 import { IResponse } from "@/services/interface";
 import { UserCard } from "./component/UserCard";
 import { PAGE_SIZE } from "@/config/constant";
+import { useScrollEvent } from "@/hook/useScrollEvent";
+import { SkeletonUserCard } from "./component/SkeletonUserCard";
+import { log, logDebug, logger } from "@/util/logger";
 
 export const SideChat = () => {
   const { idUser } = useAuthStore();
   const [pageConversation] = useState<number>(1);
   const [inputSearchUser, setInputSearchUser] = useState<string>();
+  const divRef = useRef<HTMLDivElement>(null);
+
   const { selectTarget } = useChatStore();
 
   const debouncedSetSearch = useMemo(
@@ -51,15 +56,15 @@ export const SideChat = () => {
     const result = await findUserByName({
       queryParam: {
         page: pageParam,
-        limit: 10,
+        limit: 15,
         name: inputSearchUser as string,
       },
     });
     return result;
   };
 
-  const getUserById = useInfiniteQuery<IResponse<IUserSearchResponse>>({
-    queryKey: ["getUserById", inputSearchUser],
+  const getUserByName = useInfiniteQuery<IResponse<IUserSearchResponse>>({
+    queryKey: ["getUserByName", inputSearchUser],
     initialPageParam: 1,
     getNextPageParam: (lastPage, allPages) => {
       const totalLoaded = allPages.length * PAGE_SIZE;
@@ -68,6 +73,12 @@ export const SideChat = () => {
     },
     queryFn: ({ pageParam }) => fetchUser(pageParam as number),
     enabled: !_.isEmpty(inputSearchUser),
+  });
+
+  useScrollEvent({
+    divElement: divRef,
+    delay: 500,
+    event: () => getUserByName.fetchNextPage(),
   });
 
   useEffect(() => {
@@ -82,7 +93,7 @@ export const SideChat = () => {
 
   return (
     <React.Fragment>
-      <div className="flex flex-col w-full h-full overflow-y-auto bg-slate-700 rounded-lg p-2 space-y-2">
+      <div className="flex flex-col w-full h-full bg-slate-700 rounded-lg px-2 py-1 space-y-2">
         <div className="w-full flex">
           <Input
             placeholder="Search user"
@@ -95,27 +106,31 @@ export const SideChat = () => {
             }
           />
         </div>
-        {_.isEmpty(inputSearchUser) &&
-          getConversationQuerry.data?.message.map((item) => (
-            <ChatCard
-              key={item._id}
-              isLoading={getConversationQuerry.isFetching}
-              chatPreview={item}
-            ></ChatCard>
-          ))}
-        {!_.isEmpty(inputSearchUser) && (
-          <div className="flex flex-col w-full h-full space-y-1">
-            {getUserById.isSuccess &&
-              getUserById.data.pages.map((page) => {
-                return page.message.users.map((user) => (
-                  <UserCard userInfo={user} />
-                ));
-              })}
-            {(getUserById.isLoading || getUserById.isFetchingNextPage) && (
-              <Spinner />
-            )}
-          </div>
-        )}
+        <div className="w-full h-[93%] overflow-y-auto" ref={divRef}>
+          {_.isEmpty(inputSearchUser) &&
+            getConversationQuerry.data?.message.map((item) => (
+              <ChatCard
+                key={item._id}
+                isLoading={getConversationQuerry.isFetching}
+                chatPreview={item}
+              ></ChatCard>
+            ))}
+          {!_.isEmpty(inputSearchUser) && (
+            <div className="flex flex-col w-full h-full space-y-1">
+              {getUserByName.isSuccess &&
+                getUserByName.data.pages.map((page) => {
+                  return page.message.users.map((user) => {
+                    if (user.id === idUser) return null;
+                    return <UserCard userInfo={user} key={user.id} />;
+                  });
+                })}
+              {(getUserByName.isLoading ||
+                getUserByName.isFetchingNextPage) && (
+                <SkeletonUserCard numberLoop={4} />
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </React.Fragment>
   );
