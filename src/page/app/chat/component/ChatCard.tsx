@@ -30,7 +30,7 @@ export const ChatCard = ({ chatPreview, isLoading }: IProps) => {
     >
       <Card
         classNames={{
-          body: `${isSelect && "bg-blue-600 text-white"}`,
+          body: `${isSelect && "bg-primary-600 text-white"}`,
         }}
       >
         <CardBody>

@@ -8,8 +8,8 @@ interface IProps {
 export const ChatLayout = ({ children }: IProps) => {
   return (
     <React.Fragment>
-      <div className="flex flex-col w-full h-full overflow-hidden ">
-        <div className="w-full h-[6%]">
+      <div className="flex flex-col p-2 w-full h-full overflow-hidden ">
+        <div className="w-full h-[6%] px-2">
           {/* Header */}
           <div className="flex w-full h-full">
             <NavBarApp />

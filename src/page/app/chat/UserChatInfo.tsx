@@ -14,7 +14,7 @@ export const UserChatInfo = () => {
   const { chatName } = useChatStore();
   return (
     <React.Fragment>
-      <div className="flex flex-col w-full h-full bg-slate-600 space-y-2 rounded-lg">
+      <div className="flex flex-col w-full h-full bg-gray-600 space-y-2 rounded-lg">
         <Card
           radius="none"
           classNames={{

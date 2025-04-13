@@ -105,8 +105,8 @@ export const ChatBox = () => {
 
   return (
     <React.Fragment>
-      <div className=" w-full h-full px-2 overflow-hidden">
-        <div className="flex flex-col w-full h-full bg-slate-700 rounded-lg">
+      <div className=" w-full h-full px-2  overflow-hidden">
+        <div className="flex flex-col w-full bg-gray-600 h-full rounded-lg">
           <div className="w-full">
             {/* Header chat box */}
             <ChatBoxHeader />
@@ -130,8 +130,8 @@ export const ChatBox = () => {
                 onPress={onSendMessage}
                 size="sm"
                 isIconOnly
-                variant="faded"
-                disabled={_.isEmpty(text)}
+                isDisabled={_.isEmpty(text)}
+                disableAnimation
               >
                 <Icon
                   icon="material-symbols:send-rounded"

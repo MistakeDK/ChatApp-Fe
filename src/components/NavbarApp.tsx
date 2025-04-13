@@ -13,6 +13,7 @@ import {
   NavbarContent,
   NavbarItem,
 } from "@heroui/react";
+import { Icon } from "@iconify/react/dist/iconify.js";
 import { useMutation } from "@tanstack/react-query";
 import React from "react";
 
@@ -33,17 +34,21 @@ export const NavBarApp = () => {
   });
   return (
     <React.Fragment>
-      <Navbar isBordered classNames={{ wrapper: "max-w-full" }}>
+      <Navbar classNames={{ wrapper: "max-w-full bg-blue-300 rounded-xl" }}>
         <NavbarBrand>
-          <div>
-            <Image src={IMAGES["Logo"]} className="size-20" />
-          </div>
+          <Image src={IMAGES["Logo"]} className="size-16 " />
         </NavbarBrand>
         <NavbarContent justify="end">
           <Dropdown>
             <NavbarItem>
               <DropdownTrigger>
-                <Button radius="sm" variant="bordered" color="secondary">
+                <Button
+                  radius="sm"
+                  variant="solid"
+                  startContent={
+                    <Icon icon="solar:user-bold" width="24" height="24" />
+                  }
+                >
                   {userInfo?.name}
                 </Button>
               </DropdownTrigger>

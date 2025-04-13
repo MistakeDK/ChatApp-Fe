@@ -92,7 +92,7 @@ export const SideChat = () => {
 
   return (
     <React.Fragment>
-      <div className="flex flex-col w-full h-full bg-slate-700 rounded-lg px-2 py-1 space-y-2">
+      <div className="flex flex-col w-full h-full bg-gray-600 rounded-lg px-2 py-1 space-y-2">
         <div className="w-full flex">
           <Input
             placeholder="Search user"
