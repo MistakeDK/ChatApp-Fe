@@ -3,20 +3,22 @@ import { useAuthStore } from "@/store/auth.store";
 import { Avatar, Card, CardBody } from "@heroui/react";
 import React from "react";
 
+type stateMessage = "pending" | "error" | "success";
 interface IProps {
   messageDetail: IMessageDetail;
+  state: stateMessage;
 }
 
-export const Message = ({ messageDetail }: IProps) => {
+export const Message = ({ messageDetail, state }: IProps) => {
   const { idUser } = useAuthStore();
   return (
     <React.Fragment>
       <div
         className={`flex w-full space-x-2 m-2 ${
-          messageDetail.sender === idUser ? "justify-start" : "justify-end"
-        }`}
+          state === "pending" && "opacity-60"
+        } ${messageDetail.sender === idUser ? "justify-end" : "justify-start"}`}
       >
-        {messageDetail.sender === idUser && <Avatar />}
+        {messageDetail.sender !== idUser && <Avatar />}
         <Card
           classNames={{
             body: "max-w-[18rem]",
@@ -24,7 +26,7 @@ export const Message = ({ messageDetail }: IProps) => {
         >
           <CardBody>{messageDetail.content}</CardBody>
         </Card>
-        {messageDetail.sender !== idUser && <Avatar />}
+        {messageDetail.sender === idUser && <Avatar />}
       </div>
     </React.Fragment>
   );

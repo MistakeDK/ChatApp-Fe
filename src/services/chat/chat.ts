@@ -1,6 +1,10 @@
 import { callApi } from "../callApi";
 import { IQuerryPage, IRequestParams, IResponse } from "../interface";
-import { IConversationPreview, IMessageDetail } from "./chat.interface";
+import {
+  IBodySendMessage,
+  IConversationPreview,
+  IMessageDetail,
+} from "./chat.interface";
 
 export const getListPreviewConversationApi = (
   params: IRequestParams<{ id: string }, IQuerryPage, null>
@@ -17,5 +21,14 @@ export const getMessageDetail = (
   callApi({
     url: "/chat/detail/:id",
     method: "GET",
+    ...params,
+  });
+
+export const sendMessage = (
+  params: IRequestParams<null, null, IBodySendMessage>
+): Promise<IResponse<{ conversationId: string }>> =>
+  callApi({
+    url: "/chat/sendMessage",
+    method: "POST",
     ...params,
   });

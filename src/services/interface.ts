@@ -1,4 +1,4 @@
-import { AxiosRequestConfig } from "axios";
+import { AxiosRequestConfig, Method } from "axios";
 
 export interface NotifyConfig {
   success?: string | boolean;
@@ -13,6 +13,7 @@ export interface IResponse<T> {
 
 export type IBaseConfig = Omit<AxiosRequestConfig, "params" | "data"> & {
   notifyConfig?: NotifyConfig;
+  method?: Method;
 };
 
 export type IRequestDynamicParams<P = null, Q = null, B = null> = P extends null

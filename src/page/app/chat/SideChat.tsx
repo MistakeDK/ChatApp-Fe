@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-query";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ChatCard } from "./component/ChatCard";
-import { Input, Spinner } from "@heroui/react";
+import { Input } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { useChatStore } from "@/store/chat.store";
 import { findUserByName } from "@/services/user/user";
@@ -18,7 +18,6 @@ import { UserCard } from "./component/UserCard";
 import { PAGE_SIZE } from "@/config/constant";
 import { useScrollEvent } from "@/hook/useScrollEvent";
 import { SkeletonUserCard } from "./component/SkeletonUserCard";
-import { log, logDebug, logger } from "@/util/logger";
 
 export const SideChat = () => {
   const { idUser } = useAuthStore();
@@ -106,7 +105,7 @@ export const SideChat = () => {
             }
           />
         </div>
-        <div className="w-full h-[93%] overflow-y-auto" ref={divRef}>
+        <div className="w-full h-[93%] overflow-y-auto space-y-2" ref={divRef}>
           {_.isEmpty(inputSearchUser) &&
             getConversationQuerry.data?.message.map((item) => (
               <ChatCard
