@@ -1,4 +1,3 @@
-import { log } from "@/util/logger";
 import { Card, CardBody, Avatar, Skeleton } from "@heroui/react";
 import React from "react";
 
@@ -7,7 +6,6 @@ interface IProps {
 }
 
 export const SkeletonUserCard = ({ numberLoop }: IProps) => {
-  log(numberLoop);
   return (
     <React.Fragment>
       {[...Array(numberLoop)].map((_, index) => (

@@ -89,9 +89,6 @@ export const ChatBox = () => {
     },
     onSettled: () => {
       setText("");
-      return queryClient.invalidateQueries({
-        queryKey: [chatTarget],
-      });
     },
   });
 
@@ -111,7 +108,7 @@ export const ChatBox = () => {
             {/* Header chat box */}
             <ChatBoxHeader />
           </div>
-          <div className="flex w-full h-full flex-col-reverse p-2  overflow-y-auto items-end">
+          <div className="flex w-full h-full flex-col-reverse p-2 overflow-y-auto items-end">
             {data?.message.map((message) => (
               <Message messageDetail={message} state="success"></Message>
             ))}

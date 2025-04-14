@@ -84,7 +84,10 @@ export const SideChat = () => {
     if (!getConversationQuerry.data) {
       return;
     }
-    if (pageConversation === 1) {
+    if (
+      pageConversation === 1 &&
+      getConversationQuerry.data.message.length > 0
+    ) {
       const { _id, lastMessage } = getConversationQuerry.data.message[0];
       selectTarget(_id, lastMessage.username);
     }

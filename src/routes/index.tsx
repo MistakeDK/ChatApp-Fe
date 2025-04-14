@@ -3,6 +3,7 @@ import { ChatLayout } from "@/layout/ChatLayout";
 import { ChatBox } from "@/page/app/chat/ChatBox";
 import { SideChat } from "@/page/app/chat/SideChat";
 import { UserChatInfo } from "@/page/app/chat/UserChatInfo";
+import { WebSocketApp } from "@/services/socket";
 import { createFileRoute } from "@tanstack/react-router";
 import React from "react";
 
@@ -19,6 +20,7 @@ export const Route = createFileRoute("/")({
 function RouteComponent() {
   return (
     <React.Fragment>
+      <WebSocketApp />
       <ChatLayout>
         <div className="flex w-full h-full">
           <div className="flex w-1/5 h-full">

@@ -14,7 +14,7 @@ export const Message = ({ messageDetail, state }: IProps) => {
   return (
     <React.Fragment>
       <div
-        className={`flex w-full space-x-2 m-2 ${
+        className={`flex w-full py-2 space-x-2 ${
           state === "pending" && "opacity-60"
         } ${messageDetail.sender === idUser ? "justify-end" : "justify-start"}`}
       >

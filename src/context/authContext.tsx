@@ -31,7 +31,8 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     if (isSuccess) {
       setUserInfo(data.message);
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, isSuccess]);
+
   if (!isAuthenticated || isLoading) {
     return <SpinLoadingApp />;
   }
