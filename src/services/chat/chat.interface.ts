@@ -8,6 +8,7 @@ export interface IConversationPreview {
     username: string;
   };
   nameParticipants: [string, string];
+  participants: [string, string];
 }
 
 export interface IMessageDetail {

@@ -1,6 +1,10 @@
 import { useAuthStore } from "@/store/auth.store";
 import { useEffect } from "react";
 import socket from "./socket";
+import { useQueryClient } from "@tanstack/react-query";
+import { IResponse } from "../interface";
+import { IMessageDetail } from "../chat/chat.interface";
+import { eTypeMessage } from "@/config/enum";
 
 interface IMessageReceive {
   conversationId: string;
@@ -11,7 +15,25 @@ interface IMessageReceive {
 
 export const WebSocketApp = () => {
   const { idUser, accessToken } = useAuthStore();
-
+  const querryClient = useQueryClient();
+  const updateConversation = (message: IMessageReceive) => {
+    const { content, conversationId, sender } = message;
+    const newMessage = {
+      sender: sender,
+      content: content,
+      type: eTypeMessage.TEXT,
+      conversationId: conversationId,
+    };
+    querryClient.setQueryData(
+      [message.conversationId],
+      (oldData: IResponse<IMessageDetail[]>) => {
+        return {
+          ...oldData,
+          message: [newMessage, ...(oldData?.message || [])],
+        };
+      }
+    );
+  };
   useEffect(() => {
     socket.auth = { token: accessToken };
     socket.connect();
@@ -19,7 +41,7 @@ export const WebSocketApp = () => {
     socket.emit("storeIdUser", { id: idUser });
 
     socket.on("receiveMessage", (message: IMessageReceive) => {
-      console.log("message", message);
+      updateConversation(message);
     });
 
     return () => {

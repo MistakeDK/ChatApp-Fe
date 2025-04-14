@@ -14,13 +14,14 @@ export const ChatCard = ({ chatPreview, isLoading }: IProps) => {
   const isSelect = chatTarget === chatPreview._id;
   const isNeedHide = chatPreview.lastMessage.message.length >= 24;
   const nameUser = useMemo(() => {
-    const indexUser = chatPreview.nameParticipants.indexOf(idUser as string);
+    const indexUser = chatPreview.participants.indexOf(idUser as string);
     if (indexUser === 1) {
       return chatPreview.nameParticipants[0];
     } else {
       return chatPreview.nameParticipants[1];
     }
-  }, []);
+  }, [idUser, chatPreview]);
+
   return (
     <div
       className="w-full"
