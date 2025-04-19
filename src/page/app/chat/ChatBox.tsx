@@ -12,6 +12,7 @@ import { IResponse } from "@/services/interface";
 import { IMessageDetail } from "@/services/chat/chat.interface";
 import _ from "lodash";
 import { getMessageDetailApi, sendMessageApi } from "@/services/chat/chat";
+import helper from "@/services/socket/helper";
 
 export const ChatBox = () => {
   const [text, setText] = useState("");
@@ -59,6 +60,58 @@ export const ChatBox = () => {
             ],
           };
         }
+      );
+      //   ["listConversation", idUser],
+      //   (oldData: { pages: IResponse<IResponseGetListConversation>[] }) => {
+      //     const { message } = response;
+      //     const { pages } = oldData;
+      //     let targetConversation: IConversationPreview = {
+      //       _id: message.conversationId,
+      //       participants: message.participants,
+      //       nameParticipants: message.nameParticipants,
+      //       lastMessage: {
+      //         idUser: message.sender,
+      //         message: message.content,
+      //       },
+      //     };
+      //     const updatedPages = pages.map((page) => {
+      //       const newList = page.message.listConversation.filter((conv) => {
+      //         const isMatch = conv._id === message.conversationId;
+      //         if (isMatch) {
+      //           targetConversation = {
+      //             ...conv,
+      //             lastMessage: {
+      //               idUser: message.sender,
+      //               message: message.content,
+      //             },
+      //           };
+      //         }
+      //         return !isMatch;
+      //       });
+
+      //       return {
+      //         ...page,
+      //         message: {
+      //           ...page.message,
+      //           listConversation: newList,
+      //         },
+      //       };
+      //     });
+
+      //     updatedPages[0].message.listConversation = [
+      //       targetConversation,
+      //       ...updatedPages[0].message.listConversation,
+      //     ];
+      //     return {
+      //       ...oldData,
+      //       pages: updatedPages,
+      //     };
+      //   }
+      // );
+      helper.updateListConversationCache(
+        queryClient,
+        idUser as string,
+        response.message
       );
     },
     onMutate: async () => {
@@ -111,7 +164,11 @@ export const ChatBox = () => {
           </div>
           <div className="flex w-full h-full flex-col-reverse p-2 overflow-y-auto items-end">
             {data?.message.map((message) => (
-              <Message messageDetail={message} state="success"></Message>
+              <Message
+                messageDetail={message}
+                state="success"
+                key={message._id}
+              ></Message>
             ))}
           </div>
           <Input

@@ -30,6 +30,11 @@ export interface IBodySendMessage {
   receiver?: string;
 }
 
+export type IResponseSendMessage = IBodySendMessage & {
+  participants: [string, string];
+  nameParticipants: [string, string];
+};
+
 export interface IBodyCreateConversation {
   participants: [string, string];
 }

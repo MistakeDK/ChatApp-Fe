@@ -1,6 +1,7 @@
 import { IMAGES } from "@/config/constant";
 import { logoutApi } from "@/services/auth/auth";
 import { useAuthStore } from "@/store/auth.store";
+import { useChatStore } from "@/store/chat.store";
 import {
   Button,
   Dropdown,
@@ -19,6 +20,7 @@ import React from "react";
 
 export const NavBarApp = () => {
   const { userInfo, logout } = useAuthStore();
+  const { clear } = useChatStore();
   const logOutMutation = useMutation({
     mutationFn: () =>
       logoutApi({
@@ -28,6 +30,7 @@ export const NavBarApp = () => {
         },
       }),
     onSuccess: () => {
+      clear();
       logout();
     },
     retry: false,

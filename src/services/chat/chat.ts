@@ -5,6 +5,7 @@ import {
   IBodySendMessage,
   IMessageDetail,
   IResponseGetListConversation,
+  IResponseSendMessage,
 } from "./chat.interface";
 
 export const getListPreviewConversationApi = (
@@ -36,7 +37,7 @@ export const getMessageDetailApi = (
 
 export const sendMessageApi = (
   params: IRequestParams<null, null, IBodySendMessage>
-): Promise<IResponse<{ conversationId: string }>> =>
+): Promise<IResponse<IResponseSendMessage>> =>
   callApi({
     url: "/chat/sendMessage",
     method: "POST",

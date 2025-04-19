@@ -26,7 +26,7 @@ export const LoginCard = ({ changeTypeForm }: IProps) => {
       return loginApi({
         body,
         notifyConfig: {
-          success: "Login success",
+          success: false,
           error: "Error has occur, please try again later",
         },
       });
