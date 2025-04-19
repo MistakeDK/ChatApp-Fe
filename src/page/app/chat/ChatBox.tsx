@@ -2,7 +2,7 @@ import React, { ChangeEvent, useState } from "react";
 import { ChatBoxHeader } from "./component/ChatBoxHeader";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useChatStore } from "@/store/chat.store";
-import { getMessageDetail, sendMessage } from "@/services/chat/chat";
+
 import { Message } from "./component/Message";
 import { Button, Input } from "@heroui/react";
 import { Icon } from "@iconify/react/dist/iconify.js";
@@ -11,6 +11,7 @@ import { eTypeMessage } from "@/config/enum";
 import { IResponse } from "@/services/interface";
 import { IMessageDetail } from "@/services/chat/chat.interface";
 import _ from "lodash";
+import { getMessageDetailApi, sendMessageApi } from "@/services/chat/chat";
 
 export const ChatBox = () => {
   const [text, setText] = useState("");
@@ -22,7 +23,7 @@ export const ChatBox = () => {
     enabled: !!chatTarget,
     retry: false,
     queryFn: () =>
-      getMessageDetail({
+      getMessageDetailApi({
         pathVariable: {
           id: chatTarget as string,
         },
@@ -31,7 +32,7 @@ export const ChatBox = () => {
 
   const { mutate } = useMutation({
     mutationFn: () =>
-      sendMessage({
+      sendMessageApi({
         body: {
           sender: idUser as string,
           content: text,

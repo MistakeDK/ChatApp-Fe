@@ -3,7 +3,11 @@ import { useEffect } from "react";
 import socket from "./socket";
 import { useQueryClient } from "@tanstack/react-query";
 import { IResponse } from "../interface";
-import { IMessageDetail } from "../chat/chat.interface";
+import {
+  IConversationPreview,
+  IMessageDetail,
+  IResponseGetListConversation,
+} from "../chat/chat.interface";
 import { eTypeMessage } from "@/config/enum";
 
 interface IMessageReceive {
@@ -16,7 +20,8 @@ interface IMessageReceive {
 export const WebSocketApp = () => {
   const { idUser, accessToken } = useAuthStore();
   const querryClient = useQueryClient();
-  const updateConversation = (message: IMessageReceive) => {
+
+  const updateDetailConversation = (message: IMessageReceive) => {
     const { content, conversationId, sender } = message;
     const newMessage = {
       sender: sender,
@@ -34,6 +39,54 @@ export const WebSocketApp = () => {
       }
     );
   };
+
+  const updateConversationSideBar = (message: IMessageReceive) => {
+    querryClient.setQueryData(
+      ["listConversation", idUser as string],
+      (oldData: {
+        pageParams: number[];
+        pages: IResponse<IResponseGetListConversation>[];
+      }) => {
+        const { pages } = oldData;
+        let targetConversation: IConversationPreview = null;
+        const updatedPages = pages.map((page) => {
+          const newList = page.message.listConversation.filter((conv) => {
+            const isMatch = conv._id === message.conversationId;
+            if (isMatch) {
+              targetConversation = {
+                ...conv,
+                lastMessage: {
+                  idUser: message.sender,
+                  message: message.content,
+                },
+              };
+            }
+            return !isMatch;
+          });
+
+          return {
+            ...page,
+            message: {
+              ...page.message,
+              listConversation: newList,
+            },
+          };
+        });
+        if (!targetConversation) return oldData;
+
+        updatedPages[0].message.listConversation = [
+          targetConversation,
+          ...updatedPages[0].message.listConversation,
+        ];
+
+        return {
+          ...oldData,
+          pages: updatedPages,
+        };
+      }
+    );
+  };
+
   useEffect(() => {
     socket.auth = { token: accessToken };
     socket.connect();
@@ -41,7 +94,8 @@ export const WebSocketApp = () => {
     socket.emit("storeIdUser", { id: idUser });
 
     socket.on("receiveMessage", (message: IMessageReceive) => {
-      updateConversation(message);
+      updateDetailConversation(message);
+      updateConversationSideBar(message);
     });
 
     return () => {

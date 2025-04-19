@@ -1,10 +1,6 @@
 import { getListPreviewConversationApi } from "@/services/chat/chat";
 import { useAuthStore } from "@/store/auth.store";
-import {
-  keepPreviousData,
-  useInfiniteQuery,
-  useQuery,
-} from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ChatCard } from "./component/ChatCard";
 import { Input } from "@heroui/react";
@@ -35,9 +31,15 @@ export const SideChat = () => {
     []
   );
 
-  const getConversationQuerry = useQuery({
-    queryKey: [`${idUser}:${pageConversation}`],
+  const getConversationQuerry = useInfiniteQuery({
+    queryKey: ["listConversation", idUser],
     enabled: !!idUser,
+    getNextPageParam: (lastPage, allPages) => {
+      const totalLoaded = allPages.length * PAGE_SIZE;
+      const totalRecords = lastPage?.message.total;
+      return totalLoaded < totalRecords ? allPages.length + 1 : undefined;
+    },
+    initialPageParam: 1,
     queryFn: () =>
       getListPreviewConversationApi({
         pathVariable: {
@@ -48,7 +50,6 @@ export const SideChat = () => {
           page: pageConversation,
         },
       }),
-    placeholderData: keepPreviousData,
   });
 
   const fetchUser = async (pageParam: number) => {
@@ -86,10 +87,16 @@ export const SideChat = () => {
     }
     if (
       pageConversation === 1 &&
-      getConversationQuerry.data.message.length > 0
+      getConversationQuerry.data.pages[0].message.listConversation.length > 0
     ) {
-      const { _id, lastMessage } = getConversationQuerry.data.message[0];
-      selectTarget(_id, lastMessage.username);
+      const { _id, nameParticipants, participants } =
+        getConversationQuerry.data.pages[0].message.listConversation[0];
+      const indexOfUser = participants.indexOf(idUser as string);
+      if (indexOfUser === 0) {
+        selectTarget(_id, nameParticipants[1], false);
+      } else {
+        selectTarget(_id, nameParticipants[0], false);
+      }
     }
   }, [getConversationQuerry.isSuccess]);
 
@@ -110,13 +117,17 @@ export const SideChat = () => {
         </div>
         <div className="w-full h-[93%] overflow-y-auto space-y-2" ref={divRef}>
           {_.isEmpty(inputSearchUser) &&
-            getConversationQuerry.data?.message.map((item) => (
-              <ChatCard
-                key={item._id}
-                isLoading={getConversationQuerry.isFetching}
-                chatPreview={item}
-              ></ChatCard>
-            ))}
+            getConversationQuerry.data?.pages.map((page) => {
+              return page.message.listConversation.map((conversation) => {
+                return (
+                  <ChatCard
+                    key={conversation._id}
+                    chatPreview={conversation}
+                    isLoading={getConversationQuerry.isLoading}
+                  />
+                );
+              });
+            })}
           {!_.isEmpty(inputSearchUser) && (
             <div className="flex flex-col w-full h-full space-y-1">
               {getUserByName.isSuccess &&

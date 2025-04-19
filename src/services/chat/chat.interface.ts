@@ -5,10 +5,14 @@ export interface IConversationPreview {
   lastMessage: {
     idUser: string;
     message: string;
-    username: string;
   };
   nameParticipants: [string, string];
   participants: [string, string];
+}
+
+export interface IResponseGetListConversation {
+  total: number;
+  listConversation: IConversationPreview[];
 }
 
 export interface IMessageDetail {
@@ -24,4 +28,8 @@ export interface IBodySendMessage {
   content: string;
   type: eTypeMessage;
   receiver?: string;
+}
+
+export interface IBodyCreateConversation {
+  participants: [string, string];
 }

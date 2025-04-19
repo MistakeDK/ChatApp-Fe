@@ -7,5 +7,6 @@ export const findUserByName = (
 ): Promise<IResponse<IUserSearchResponse>> =>
   callApi({
     url: "/users/findByName",
+    method: "GET",
     ...params,
   });

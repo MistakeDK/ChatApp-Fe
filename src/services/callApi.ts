@@ -1,4 +1,4 @@
-import { AxiosResponse } from "axios";
+import { AxiosResponse, Method } from "axios";
 import { axiosClient } from "./config";
 
 export const callApi = ({
@@ -6,9 +6,11 @@ export const callApi = ({
   pathVariable,
   body,
   queryParam,
+  method,
   ...options
 }: {
   url: string;
+  method: Method;
   pathVariable?: unknown;
   body?: unknown;
   queryParam?: unknown;
@@ -25,6 +27,7 @@ export const callApi = ({
     url: formattedUrl,
     data: body,
     params: queryParam,
+    method: method,
     ...options,
   }) as Promise<AxiosResponse["data"]>;
 };
