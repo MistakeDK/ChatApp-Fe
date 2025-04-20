@@ -8,6 +8,7 @@ export interface IConversationPreview {
   };
   nameParticipants: [string, string];
   participants: [string, string];
+  isNew?: boolean;
 }
 
 export interface IResponseGetListConversation {

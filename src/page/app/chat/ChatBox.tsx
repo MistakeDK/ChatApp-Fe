@@ -77,11 +77,7 @@ export const ChatBox = () => {
           return cloneOldData;
         }
       );
-      helper.updateListConversationCache(
-        queryClient,
-        idUser as string,
-        response.message
-      );
+      helper.updateListConversationCache(queryClient, response.message, false);
     },
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: [chatTarget] });

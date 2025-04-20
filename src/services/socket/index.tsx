@@ -8,9 +8,11 @@ import { eTypeMessage } from "@/config/enum";
 import { IMessageReceive } from "./socket.interface";
 import helper from "./helper";
 import _ from "lodash";
+import { useChatStore } from "@/store/chat.store";
 
 export const WebSocketApp = () => {
   const { idUser, accessToken } = useAuthStore();
+  const { chatTarget } = useChatStore();
   const querryClient = useQueryClient();
 
   const updateDetailConversation = (message: IMessageReceive) => {
@@ -42,8 +44,8 @@ export const WebSocketApp = () => {
       updateDetailConversation(message);
       helper.updateListConversationCache(
         querryClient,
-        idUser as string,
-        message
+        message,
+        chatTarget !== message.conversationId
       );
     });
 

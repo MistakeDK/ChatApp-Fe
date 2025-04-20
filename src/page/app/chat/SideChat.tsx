@@ -35,7 +35,7 @@ export const SideChat = () => {
   const getConversationQuerry = useInfiniteQuery<
     IResponse<IResponseGetListConversation>
   >({
-    queryKey: ["listConversation", idUser],
+    queryKey: ["listConversation"],
     enabled: !!idUser,
     getNextPageParam: (lastPage, allPages) => {
       const totalLoaded = allPages.length * PAGE_SIZE;
@@ -122,7 +122,10 @@ export const SideChat = () => {
             }
           />
         </div>
-        <div className="w-full h-[93%] overflow-y-auto space-y-2" ref={divRef}>
+        <div
+          className="w-full h-[93%] overflow-y-auto py-1 space-y-2"
+          ref={divRef}
+        >
           {_.isEmpty(inputSearchUser) &&
             getConversationQuerry.data?.pages.map((page) => {
               return page.message.listConversation.map((conversation) => {

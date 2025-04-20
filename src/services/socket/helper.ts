@@ -9,11 +9,11 @@ import { IMessageReceive } from "./socket.interface";
 
 const updateListConversationCache = (
   queryClient: QueryClient,
-  idUser: string,
-  message: IResponseSendMessage | IMessageReceive
+  message: IResponseSendMessage | IMessageReceive,
+  isNew: boolean
 ) => {
   queryClient.setQueryData(
-    ["listConversation", idUser],
+    ["listConversation"],
     (oldData: { pages: IResponse<IResponseGetListConversation>[] }) => {
       const { pages } = oldData;
       let targetConversation: IConversationPreview = {
@@ -24,6 +24,7 @@ const updateListConversationCache = (
           idUser: message.sender,
           message: message.content,
         },
+        isNew: isNew,
       };
 
       const updatedPages = pages.map((page) => {
@@ -36,6 +37,7 @@ const updateListConversationCache = (
                 idUser: message.sender,
                 message: message.content,
               },
+              isNew: isNew,
             };
           }
           return !isMatch;
@@ -63,6 +65,39 @@ const updateListConversationCache = (
   );
 };
 
+const removeNewStateInConversation = (
+  queryClient: QueryClient,
+  idConversation: string
+) => {
+  queryClient.setQueryData(
+    ["listConversation"],
+    (oldData: { pages: IResponse<IResponseGetListConversation>[] }) => {
+      if (!oldData) return oldData;
+
+      const updatedPages = oldData.pages.map((page) => {
+        return {
+          ...page,
+          message: {
+            ...page.message,
+            listConversation: page.message.listConversation.map(
+              (conversation) =>
+                conversation._id === idConversation
+                  ? { ...conversation, isNew: false }
+                  : conversation
+            ),
+          },
+        };
+      });
+
+      return {
+        ...oldData,
+        pages: updatedPages,
+      };
+    }
+  );
+};
+
 export default {
   updateListConversationCache,
+  removeNewStateInConversation,
 };
