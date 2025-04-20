@@ -1,113 +1,82 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useRef, useState } from "react";
 import { ChatBoxHeader } from "./component/ChatBoxHeader";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useChatStore } from "@/store/chat.store";
 
-import { Message } from "./component/Message";
 import { Button, Input } from "@heroui/react";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useAuthStore } from "@/store/auth.store";
 import { eTypeMessage } from "@/config/enum";
 import { IResponse } from "@/services/interface";
-import { IMessageDetail } from "@/services/chat/chat.interface";
+import { IResponseMessageDetail } from "@/services/chat/chat.interface";
 import _ from "lodash";
 import { getMessageDetailApi, sendMessageApi } from "@/services/chat/chat";
 import helper from "@/services/socket/helper";
+import { PAGE_SIZE } from "@/config/constant";
+import { Message } from "./component/Message";
+import { useScrollEvent } from "@/hook/useScrollEvent";
 
 export const ChatBox = () => {
+  const divRef = useRef<HTMLDivElement>(null);
   const [text, setText] = useState("");
   const queryClient = useQueryClient();
   const { chatTarget } = useChatStore();
   const { idUser } = useAuthStore();
-  const { data } = useQuery({
+  const fetchMessageDetail = async (cursor: string) => {
+    const result = await getMessageDetailApi({
+      pathVariable: {
+        id: chatTarget as string,
+      },
+      queryParam: {
+        cursor,
+        limit: PAGE_SIZE,
+      },
+    });
+    return result;
+  };
+
+  const { data, fetchNextPage } = useInfiniteQuery<
+    IResponse<IResponseMessageDetail>
+  >({
     queryKey: [chatTarget],
     enabled: !!chatTarget,
     retry: false,
-    queryFn: () =>
-      getMessageDetailApi({
-        pathVariable: {
-          id: chatTarget as string,
-        },
-      }),
+    initialPageParam: null,
+    getNextPageParam: (lastPage) => {
+      const nextCursor = lastPage.message.nextCursor;
+      return nextCursor ?? undefined;
+    },
+    queryFn: ({ pageParam }) => fetchMessageDetail(pageParam as string),
   });
 
   const { mutate } = useMutation({
-    mutationFn: () =>
-      sendMessageApi({
+    mutationFn: () => {
+      return sendMessageApi({
         body: {
           sender: idUser as string,
           content: text,
           type: eTypeMessage.TEXT,
           conversationId: chatTarget as string,
         },
-      }),
+      });
+    },
     retry: false,
     onSuccess: (response) => {
       queryClient.setQueryData(
         [chatTarget],
-        (oldData: IResponse<IMessageDetail[]>) => {
-          const filtered = oldData.message.filter(
-            (m: IMessageDetail) => !m.optimistic
-          );
-          return {
-            ...oldData,
-            message: [
-              {
-                ...response.message,
-                sender: idUser,
-              },
-              ...filtered,
-            ],
+        (oldData: { pages: IResponse<IResponseMessageDetail>[] }) => {
+          const cloneOldData = _.cloneDeep(oldData);
+          cloneOldData.pages[0].message.messageConversation[0] = {
+            ...oldData.pages[0].message.messageConversation[0],
+            optimistic: false,
           };
+          return cloneOldData;
         }
       );
-      //   ["listConversation", idUser],
-      //   (oldData: { pages: IResponse<IResponseGetListConversation>[] }) => {
-      //     const { message } = response;
-      //     const { pages } = oldData;
-      //     let targetConversation: IConversationPreview = {
-      //       _id: message.conversationId,
-      //       participants: message.participants,
-      //       nameParticipants: message.nameParticipants,
-      //       lastMessage: {
-      //         idUser: message.sender,
-      //         message: message.content,
-      //       },
-      //     };
-      //     const updatedPages = pages.map((page) => {
-      //       const newList = page.message.listConversation.filter((conv) => {
-      //         const isMatch = conv._id === message.conversationId;
-      //         if (isMatch) {
-      //           targetConversation = {
-      //             ...conv,
-      //             lastMessage: {
-      //               idUser: message.sender,
-      //               message: message.content,
-      //             },
-      //           };
-      //         }
-      //         return !isMatch;
-      //       });
-
-      //       return {
-      //         ...page,
-      //         message: {
-      //           ...page.message,
-      //           listConversation: newList,
-      //         },
-      //       };
-      //     });
-
-      //     updatedPages[0].message.listConversation = [
-      //       targetConversation,
-      //       ...updatedPages[0].message.listConversation,
-      //     ];
-      //     return {
-      //       ...oldData,
-      //       pages: updatedPages,
-      //     };
-      //   }
-      // );
       helper.updateListConversationCache(
         queryClient,
         idUser as string,
@@ -118,7 +87,7 @@ export const ChatBox = () => {
       await queryClient.cancelQueries({ queryKey: [chatTarget] });
       const previousData = queryClient.getQueryData([chatTarget]);
       const optimisticMessage = {
-        sender: idUser,
+        sender: idUser as string,
         content: text,
         type: eTypeMessage.TEXT,
         conversationId: chatTarget,
@@ -127,11 +96,13 @@ export const ChatBox = () => {
 
       queryClient.setQueryData(
         [chatTarget],
-        (oldData: IResponse<IMessageDetail[]>) => {
-          return {
-            ...oldData,
-            message: [...(oldData?.message || []), optimisticMessage],
-          };
+        (oldData: { pages: IResponse<IResponseMessageDetail>[] }) => {
+          const cloneOldData = _.cloneDeep(oldData);
+          cloneOldData.pages[0].message.messageConversation.unshift(
+            optimisticMessage
+          );
+
+          return cloneOldData;
         }
       );
       return { previousData };
@@ -154,6 +125,16 @@ export const ChatBox = () => {
     setText(e.target.value);
   };
 
+  useScrollEvent({
+    divElement: divRef,
+    delay: 300,
+    event: (direction) => {
+      if (direction === "top") {
+        fetchNextPage();
+      }
+    },
+  });
+
   return (
     <React.Fragment>
       <div className=" w-full h-full px-2  overflow-hidden">
@@ -162,14 +143,15 @@ export const ChatBox = () => {
             {/* Header chat box */}
             <ChatBoxHeader />
           </div>
-          <div className="flex w-full h-full flex-col-reverse p-2 overflow-y-auto items-end">
-            {data?.message.map((message) => (
-              <Message
-                messageDetail={message}
-                state="success"
-                key={message._id}
-              ></Message>
-            ))}
+          <div
+            className="flex w-full h-full flex-col-reverse p-2 overflow-y-auto"
+            ref={divRef}
+          >
+            {data?.pages.map((page) => {
+              return page.message.messageConversation.map((item) => (
+                <Message messageDetail={item} state="success" key={item._id} />
+              ));
+            })}
           </div>
           <Input
             className="mb-2 px-2"

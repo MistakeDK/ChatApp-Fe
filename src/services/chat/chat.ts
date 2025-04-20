@@ -1,10 +1,15 @@
 import { callApi } from "../callApi";
-import { IQuerryPage, IRequestParams, IResponse } from "../interface";
+import {
+  IQuerryCursor,
+  IQuerryPage,
+  IRequestParams,
+  IResponse,
+} from "../interface";
 import {
   IBodyCreateConversation,
   IBodySendMessage,
-  IMessageDetail,
   IResponseGetListConversation,
+  IResponseMessageDetail,
   IResponseSendMessage,
 } from "./chat.interface";
 
@@ -27,8 +32,8 @@ export const getOrCreateConversationApi = (
   });
 
 export const getMessageDetailApi = (
-  params: IRequestParams<{ id: string }, null, null>
-): Promise<IResponse<IMessageDetail[]>> =>
+  params: IRequestParams<{ id: string }, IQuerryCursor, null>
+): Promise<IResponse<IResponseMessageDetail>> =>
   callApi({
     url: "/chat/detail/:id",
     method: "GET",

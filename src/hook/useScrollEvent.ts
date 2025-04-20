@@ -1,22 +1,34 @@
 import { debounce } from "lodash";
-import { RefObject, useEffect, useMemo } from "react";
+import { useEffect, useMemo, RefObject } from "react";
 
 interface IProps {
   divElement: RefObject<HTMLDivElement | null>;
-  delay: number;
-  event: () => void;
+  delay?: number;
+  event: (direction: "top" | "bottom") => void;
 }
+
 export const useScrollEvent = ({ divElement, event, delay = 300 }: IProps) => {
-  const debouncedEvent = useMemo(() => debounce(event, delay), [event, delay]);
+  const debouncedEvent = useMemo(
+    () =>
+      debounce((direction: "top" | "bottom") => {
+        event(direction);
+      }, delay),
+    [event, delay]
+  );
+
   useEffect(() => {
     const handleScroll = () => {
       const el = divElement.current;
       if (!el) return;
 
-      const isAtBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 20;
+      const { scrollTop, clientHeight, scrollHeight } = el;
 
-      if (isAtBottom) {
-        debouncedEvent();
+      if (scrollTop <= 20) {
+        debouncedEvent("top");
+      }
+
+      if (scrollTop + clientHeight >= scrollHeight - 20) {
+        debouncedEvent("bottom");
       }
     };
 
@@ -31,6 +43,7 @@ export const useScrollEvent = ({ divElement, event, delay = 300 }: IProps) => {
       }
       debouncedEvent.cancel();
     };
-  }, [divElement, event]);
+  }, [divElement, debouncedEvent]);
+
   return null;
 };

@@ -19,7 +19,13 @@ export interface IMessageDetail {
   _id?: string;
   sender: string;
   content: string;
+  type: eTypeMessage;
   optimistic?: boolean;
+}
+
+export interface IResponseMessageDetail {
+  messageConversation: IMessageDetail[];
+  nextCursor: string | null;
 }
 
 export interface IBodySendMessage {

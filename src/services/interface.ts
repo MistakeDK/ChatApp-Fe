@@ -78,3 +78,8 @@ export interface IQuerryPage {
   limit: number;
   page: number;
 }
+
+export interface IQuerryCursor {
+  limit: number;
+  cursor: string;
+}

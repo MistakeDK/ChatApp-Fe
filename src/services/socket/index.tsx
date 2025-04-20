@@ -3,31 +3,31 @@ import { useEffect } from "react";
 import socket from "./socket";
 import { useQueryClient } from "@tanstack/react-query";
 import { IResponse } from "../interface";
-import { IMessageDetail } from "../chat/chat.interface";
+import { IResponseMessageDetail } from "../chat/chat.interface";
 import { eTypeMessage } from "@/config/enum";
 import { IMessageReceive } from "./socket.interface";
 import helper from "./helper";
+import _ from "lodash";
 
 export const WebSocketApp = () => {
   const { idUser, accessToken } = useAuthStore();
   const querryClient = useQueryClient();
 
   const updateDetailConversation = (message: IMessageReceive) => {
-    const { content, conversationId, sender } = message;
-    console.log();
+    const { content, sender, _id, conversationId } = message;
     const newMessage = {
       sender: sender,
       content: content,
       type: eTypeMessage.TEXT,
-      conversationId: conversationId,
+      conversationId,
+      _id,
     };
     querryClient.setQueryData(
-      [message.conversationId],
-      (oldData: IResponse<IMessageDetail[]>) => {
-        return {
-          ...oldData,
-          message: [newMessage, ...(oldData?.message || [])],
-        };
+      [conversationId],
+      (oldData: { pages: IResponse<IResponseMessageDetail>[] }) => {
+        const cloneOldData = _.cloneDeep(oldData);
+        cloneOldData.pages[0].message.messageConversation.unshift(newMessage);
+        return cloneOldData;
       }
     );
   };

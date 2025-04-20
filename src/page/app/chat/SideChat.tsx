@@ -14,6 +14,7 @@ import { UserCard } from "./component/UserCard";
 import { PAGE_SIZE } from "@/config/constant";
 import { useScrollEvent } from "@/hook/useScrollEvent";
 import { SkeletonUserCard } from "./component/SkeletonUserCard";
+import { IResponseGetListConversation } from "@/services/chat/chat.interface";
 
 export const SideChat = () => {
   const { idUser } = useAuthStore();
@@ -31,7 +32,9 @@ export const SideChat = () => {
     []
   );
 
-  const getConversationQuerry = useInfiniteQuery({
+  const getConversationQuerry = useInfiniteQuery<
+    IResponse<IResponseGetListConversation>
+  >({
     queryKey: ["listConversation", idUser],
     enabled: !!idUser,
     getNextPageParam: (lastPage, allPages) => {
@@ -40,14 +43,14 @@ export const SideChat = () => {
       return totalLoaded < totalRecords ? allPages.length + 1 : undefined;
     },
     initialPageParam: 1,
-    queryFn: () =>
+    queryFn: ({ pageParam }) =>
       getListPreviewConversationApi({
         pathVariable: {
           id: idUser as string,
         },
         queryParam: {
           limit: 10,
-          page: pageConversation,
+          page: pageParam as number,
         },
       }),
   });
@@ -78,7 +81,11 @@ export const SideChat = () => {
   useScrollEvent({
     divElement: divRef,
     delay: 500,
-    event: () => getUserByName.fetchNextPage(),
+    event: (direction) => {
+      if (direction === "bottom") {
+        getUserByName.fetchNextPage();
+      }
+    },
   });
 
   useEffect(() => {
