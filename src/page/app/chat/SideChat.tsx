@@ -37,12 +37,11 @@ export const SideChat = () => {
   >({
     queryKey: ["listConversation"],
     enabled: !!idUser,
-    getNextPageParam: (lastPage, allPages) => {
-      const totalLoaded = allPages.length * PAGE_SIZE;
-      const totalRecords = lastPage?.message.total;
-      return totalLoaded < totalRecords ? allPages.length + 1 : undefined;
+    getNextPageParam: (lastPage) => {
+      const { cursor } = lastPage.message;
+      return cursor ?? undefined;
     },
-    initialPageParam: 1,
+    initialPageParam: null,
     queryFn: ({ pageParam }) =>
       getListPreviewConversationApi({
         pathVariable: {

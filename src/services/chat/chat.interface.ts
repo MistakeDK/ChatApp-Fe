@@ -12,7 +12,7 @@ export interface IConversationPreview {
 }
 
 export interface IResponseGetListConversation {
-  total: number;
+  cursor: string;
   listConversation: IConversationPreview[];
 }
 
